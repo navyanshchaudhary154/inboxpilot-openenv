@@ -1,3 +1,4 @@
+import asyncio
 import json
 import os
 from typing import List, Optional
@@ -7,11 +8,11 @@ from openai import OpenAI
 from client import InboxPilotEnvClient
 from models import SupportAction
 
-# ✅ Use Scaler-injected env vars — DO NOT hardcode or use fallback credentials
+# ✅ REQUIRED for hackathon (do not change)
 API_KEY = os.environ["API_KEY"]
 API_BASE_URL = os.environ["API_BASE_URL"]
 MODEL_NAME = os.getenv("MODEL_NAME") or "Qwen/Qwen2.5-72B-Instruct"
-HF_SPACE_URL = os.getenv("HF_SPACE_URL", "https://navyansh77-inboxpilot-openenv1-0.hf.space")
+HF_SPACE_URL = os.getenv("HF_SPACE_URL", "https://navyansh77-inboxpilot-openenv.hf.space")
 
 TASKS = ["easy", "medium", "hard"]
 BENCHMARK = "inboxpilot-openenv"
@@ -52,8 +53,6 @@ low, medium, high, urgent
 Allowed resolution_status values:
 open, waiting_for_customer, resolved, escalated
 
-escalate and request_more_info must be true or false (boolean).
-
 Ticket ID: {observation.ticket_id}
 Customer tier: {observation.customer_tier}
 Subject: {observation.subject}
@@ -62,22 +61,18 @@ Previous interactions: {observation.previous_interactions}
 Sentiment hint: {observation.sentiment_hint}
 SLA hours remaining: {observation.sla_hours_remaining}
 
-Return JSON only. No markdown, no explanation.
+Return JSON only.
 """.strip()
 
 
 def llm_action(client: OpenAI, observation) -> dict:
-    """
-    Makes LLM call through Scaler's proxy (client is initialized with
-    API_BASE_URL and API_KEY from environment — required by the validator).
-    """
     try:
         completion = client.chat.completions.create(
             model=MODEL_NAME,
             messages=[
                 {
                     "role": "system",
-                    "content": "You are a precise support triage assistant that returns valid JSON only. No markdown, no explanation.",
+                    "content": "You are a precise support triage assistant that returns valid JSON only.",
                 },
                 {
                     "role": "user",
@@ -86,26 +81,27 @@ def llm_action(client: OpenAI, observation) -> dict:
             ],
             temperature=0.2,
             max_tokens=300,
-            stream=False,
         )
+
         text = (completion.choices[0].message.content or "").strip()
         text = text.replace("```json", "").replace("```", "").strip()
         return json.loads(text)
+
     except Exception as exc:
         print(f"[DEBUG] Model request failed: {exc}", flush=True)
         raise
 
 
-def main() -> None:
+# ✅ ASYNC MAIN (FIXED)
+async def main() -> None:
     print(f"[DEBUG] API_BASE_URL={API_BASE_URL}", flush=True)
     print(f"[DEBUG] API_KEY={'SET' if API_KEY else 'NOT SET'}", flush=True)
     print(f"[DEBUG] MODEL_NAME={MODEL_NAME}", flush=True)
 
-    # ✅ OpenAI client MUST use Scaler's base_url and api_key
-    # This is what the LLM Criteria Check validates
+    # LLM client (proxy)
     client = OpenAI(base_url=API_BASE_URL, api_key=API_KEY)
 
-    # The env client connects to your HF Space (not the LLM proxy)
+    # Env client (HF Space)
     env = InboxPilotEnvClient(base_url=HF_SPACE_URL)
 
     for task in TASKS:
@@ -117,15 +113,18 @@ def main() -> None:
         log_start(task=task, env=BENCHMARK, model=MODEL_NAME)
 
         try:
-            result = env.reset(task_name=task)
+            # ✅ FIX: await
+            result = await env.reset(task_name=task)
             observation = result.observation
 
-            # ✅ LLM call goes through Scaler's proxy via `client`
+            # LLM call
             action_dict = llm_action(client, observation)
             action_str = json.dumps(action_dict, separators=(",", ":"))
 
             action_obj = SupportAction(**action_dict)
-            result = env.step(action_obj)
+
+            # ✅ FIX: await
+            result = await env.step(action_obj)
 
             reward = float(result.reward or 0.0)
             done = bool(result.done)
@@ -148,5 +147,6 @@ def main() -> None:
             log_end(success=success, steps=steps_taken, score=score, rewards=rewards)
 
 
+# ✅ FIX: run async
 if __name__ == "__main__":
-    main()
+    asyncio.run(main())
