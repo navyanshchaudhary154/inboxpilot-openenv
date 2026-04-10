@@ -1,0 +1,23 @@
+{
+  "task_id": "TICKET-001",
+  "customer_tier": "free",
+  "subject": "Received a damaged product",
+  "email_body": "Hi, I received my order today but the item is broken. Can I get a refund?",
+  "previous_interactions": [],
+  "sentiment_hint": "frustrated",
+  "sla_hours_remaining": 48,
+  "action": {
+    "category": "refund",
+    "priority": "medium",
+    "escalate": false,
+    "resolution_status": "waiting_for_customer",
+    "response": "Hi, we're really sorry to hear your order arrived damaged. Could you please send us a photo of the issue? Once we receive it, we'll process a full refund for your order right away."
+  },
+  "expected_action": {
+    "category": "refund",
+    "priority": "medium",
+    "escalate": false,
+    "resolution_status": "waiting_for_customer"
+  },
+  "response_keywords": ["sorry", "refund", "order", "photo", "issue"]
+}

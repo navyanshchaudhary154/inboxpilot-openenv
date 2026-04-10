@@ -1,0 +1,25 @@
+name: inboxpilot-openenv
+description: Real-world customer support triage environment for OpenEnv
+version: 0.1.0
+
+server:
+  app: server.app:app
+
+entrypoint:
+  module: client
+  class: InboxPilotEnvClient
+
+metadata:
+  domain: customer_support
+  difficulty_levels:
+    - easy
+    - medium
+    - hard
+
+tasks:
+  - id: easy
+    description: Damaged product refund request
+  - id: medium
+    description: Duplicate billing complaint from a premium user
+  - id: hard
+    description: Enterprise outage complaint requiring escalation

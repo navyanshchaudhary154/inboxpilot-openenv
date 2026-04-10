@@ -1,0 +1,26 @@
+{
+  "task_id": "TICKET-003",
+  "customer_tier": "enterprise",
+  "subject": "Platform outage affecting our business",
+  "email_body": "Our entire system is down and we cannot access your platform. This is critical and impacting our operations.",
+  "previous_interactions": [
+    "Enterprise client with SLA agreement",
+    "Previous uptime issues reported"
+  ],
+  "sentiment_hint": "angry",
+  "sla_hours_remaining": 2,
+  "action": {
+    "category": "technical_issue",
+    "priority": "urgent",
+    "escalate": true,
+    "resolution_status": "escalated",
+    "response": "We sincerely apologize for this urgent disruption to your business. This has been immediately escalated to our engineering team as our top priority. Given your SLA agreement, we are treating this as a critical incident and will provide updates every 30 minutes until the platform is fully restored."
+  },
+  "expected_action": {
+    "category": "technical_issue",
+    "priority": "urgent",
+    "escalate": true,
+    "resolution_status": "escalated"
+  },
+  "response_keywords": ["urgent", "escalated", "engineering", "apologize", "priority"]
+}

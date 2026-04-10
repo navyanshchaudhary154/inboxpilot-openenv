@@ -1,0 +1,22 @@
+[project]
+name = "inboxpilot-openenv"
+version = "0.1.0"
+description = "OpenEnv customer support triage environment"
+requires-python = ">=3.10"
+dependencies = [
+    "openenv-core",
+    "fastapi",
+    "uvicorn",
+    "openai",
+    "pydantic",
+    "pyyaml",
+]
+
+[project.scripts]
+server = "inboxpilot_openenv.server.app:main"
+
+[tool.setuptools]
+py-modules = ["models", "client", "inference"]
+
+[project.scripts]
+server = "server.app:main"

@@ -1,0 +1,23 @@
+{
+  "task_id": "TICKET-002",
+  "customer_tier": "premium",
+  "subject": "Charged twice for my subscription",
+  "email_body": "Hello, I noticed I was billed twice this month for my subscription. Please fix this immediately.",
+  "previous_interactions": ["User contacted support once about billing delay."],
+  "sentiment_hint": "angry",
+  "sla_hours_remaining": 12,
+  "action": {
+    "category": "billing",
+    "priority": "high",
+    "escalate": false,
+    "resolution_status": "waiting_for_customer",
+    "response": "Hello, we sincerely apologize for the duplicate billing on your subscription. We are actively investigating this billing issue and will confirm the details with you shortly. Please allow us a moment to review your account and ensure the duplicate charge is fully resolved."
+  },
+  "expected_action": {
+    "category": "billing",
+    "priority": "high",
+    "escalate": false,
+    "resolution_status": "waiting_for_customer"
+  },
+  "response_keywords": ["apologize", "billing", "duplicate", "investigate", "confirm"]
+}
