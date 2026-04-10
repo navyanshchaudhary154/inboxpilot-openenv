@@ -13,10 +13,7 @@ dependencies = [
 ]
 
 [project.scripts]
-server = "inboxpilot_openenv.server.app:main"
+server = "server.app:main"
 
 [tool.setuptools]
-py-modules = ["models", "client", "inference"]
-
-[project.scripts]
-server = "server.app:main"
+py-modules = ["models", "client", "env", "grader", "inference"]
