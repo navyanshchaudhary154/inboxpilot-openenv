@@ -11,12 +11,23 @@ from models import SupportAction, SupportObservation, SupportState
 class InboxPilotEnvironment(Environment):
     SUPPORTS_CONCURRENT_SESSIONS = True
 
+    # Shared memory across requests/instances on the same running app
+    _shared_task: dict | None = None
+    _shared_task_name: str = "easy"
+    _shared_done: bool = False
+    _shared_state: SupportState = SupportState()
+
     def __init__(self, tasks_dir: str | None = None):
         base_dir = os.path.dirname(os.path.dirname(__file__))
         self.tasks_dir = tasks_dir or os.path.join(base_dir, "tasks")
-        self._state = SupportState()
-        self._current_task: dict | None = None
-        self._done = False
+        self._state = InboxPilotEnvironment._shared_state
+        self._current_task = InboxPilotEnvironment._shared_task
+        self._done = InboxPilotEnvironment._shared_done
+
+    def _sync_shared(self) -> None:
+        InboxPilotEnvironment._shared_task = self._current_task
+        InboxPilotEnvironment._shared_done = self._done
+        InboxPilotEnvironment._shared_state = self._state
 
     def _load_task(self, task_name: str) -> dict:
         path = os.path.join(self.tasks_dir, f"{task_name}.json")
@@ -50,6 +61,7 @@ class InboxPilotEnvironment(Environment):
     ) -> SupportObservation:
         self._current_task = self._load_task(task_name)
         self._done = False
+        InboxPilotEnvironment._shared_task_name = task_name
 
         expected = self._current_task["expected_action"]
 
@@ -66,6 +78,7 @@ class InboxPilotEnvironment(Environment):
             last_reward=0.0,
             completed=False,
         )
+        self._sync_shared()
 
         return SupportObservation(
             done=False,
@@ -86,11 +99,14 @@ class InboxPilotEnvironment(Environment):
         timeout_s=None,
         **kwargs,
     ) -> SupportObservation:
-        if self._current_task is None:
-            task_name = kwargs.get("task_name", "easy")
-            self._current_task = self._load_task(task_name)
-            self._done = False
+        # Reload shared state for stateless Swagger/API requests
+        self._current_task = InboxPilotEnvironment._shared_task
+        self._done = InboxPilotEnvironment._shared_done
+        self._state = InboxPilotEnvironment._shared_state
 
+        if self._current_task is None:
+            task_name = InboxPilotEnvironment._shared_task_name
+            self._current_task = self._load_task(task_name)
             expected = self._current_task["expected_action"]
             self._state = SupportState(
                 episode_id=str(uuid.uuid4()),
@@ -105,6 +121,7 @@ class InboxPilotEnvironment(Environment):
                 last_reward=0.0,
                 completed=False,
             )
+            self._done = False
 
         if self._done:
             raise ValueError("Task already completed. Call reset() for a new task.")
@@ -137,6 +154,7 @@ class InboxPilotEnvironment(Environment):
         self._done = True
         self._state.last_reward = total_reward
         self._state.completed = True
+        self._sync_shared()
 
         return SupportObservation(
             done=True,
@@ -153,4 +171,4 @@ class InboxPilotEnvironment(Environment):
 
     @property
     def state(self) -> SupportState:
-        return self._state
+        return InboxPilotEnvironment._shared_state
