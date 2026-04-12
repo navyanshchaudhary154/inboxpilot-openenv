@@ -100,5 +100,4 @@ inboxpilot_openenv/
 └── server/
     ├── __init__.py
     ├── environment.py
-    └──  app.py
-    
+    └── app.py
