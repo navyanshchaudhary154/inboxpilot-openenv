@@ -81,6 +81,7 @@ This creates meaningful partial progress signals instead of simple pass/fail sco
 
 ```text
 inboxpilot_openenv/
+├── Dockerfile
 ├── __init__.py
 ├── models.py
 ├── client.py
@@ -99,5 +100,5 @@ inboxpilot_openenv/
 └── server/
     ├── __init__.py
     ├── environment.py
-    ├── app.py
-    └── Dockerfile
+    └──  app.py
+    Dockerfile
