@@ -4,9 +4,9 @@ import uuid
 from typing import List
 
 from openenv.core.env_server import Environment
-from typing import Dict, Any
 
 from models import SupportAction, SupportObservation, SupportState
+
 
 class InboxPilotEnvironment(Environment):
     SUPPORTS_CONCURRENT_SESSIONS = True
@@ -87,7 +87,24 @@ class InboxPilotEnvironment(Environment):
         **kwargs,
     ) -> SupportObservation:
         if self._current_task is None:
-            raise ValueError("Environment not reset. Call reset() first.")
+            task_name = kwargs.get("task_name", "easy")
+            self._current_task = self._load_task(task_name)
+            self._done = False
+
+            expected = self._current_task["expected_action"]
+            self._state = SupportState(
+                episode_id=str(uuid.uuid4()),
+                step_count=0,
+                current_task_name=task_name,
+                ticket_id=self._current_task["task_id"],
+                customer_tier=self._current_task["customer_tier"],
+                expected_category=expected["category"],
+                expected_priority=expected["priority"],
+                expected_escalate=expected["escalate"],
+                expected_resolution_status=expected["resolution_status"],
+                last_reward=0.0,
+                completed=False,
+            )
 
         if self._done:
             raise ValueError("Task already completed. Call reset() for a new task.")
