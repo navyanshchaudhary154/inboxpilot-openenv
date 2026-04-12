@@ -150,6 +150,7 @@ inboxpilot_openenv/
 └── server/
     ├── __init__.py
     ├── environment.py
+<<<<<<< HEAD
     └── app.py
 ```
 
@@ -196,3 +197,6 @@ Instead of abstract benchmarks, it focuses on practical decision-making, structu
 ---
 
 **Built with focus, iteration, and a bit of chaos 😄**
+=======
+    └──  app.py
+>>>>>>> 5ce4fc8aa6735d1c80302c6718c2bb808d8a22e0
