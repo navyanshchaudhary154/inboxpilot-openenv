@@ -27,6 +27,33 @@ This project simulates a realistic customer support workflow where an AI agent m
 
 The environment is designed to be lightweight, structured, and suitable for automated evaluation.
 
+
+## 🧠 What makes this environment unique?
+
+Unlike simple classification tasks, InboxPilot simulates a **decision-making workflow** where an AI agent must:
+
+- Balance customer sentiment with SLA constraints
+- Decide when escalation is necessary
+- Generate a context-aware response
+- Optimize for partial reward signals
+
+This makes it suitable for evaluating **reasoning + decision-making**, not just classification.
+
+
+## 📊 Evaluation Insight
+
+This environment is designed to evaluate:
+
+- Structured decision-making
+- Prioritization under constraints
+- Response generation quality
+- Trade-offs between speed vs escalation
+
+It goes beyond simple accuracy and measures **agent reasoning quality**.
+
+
+
+
 ## Why this matters
 
 Customer support triage is a real business workflow used in SaaS, e-commerce, and enterprise platforms. InboxPilot turns that workflow into a benchmarkable environment for AI agents.
