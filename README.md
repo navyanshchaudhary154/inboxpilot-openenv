@@ -1,5 +1,4 @@
 ---
-
 title: InboxPilot-OpenEnv
 emoji: 👀
 colorFrom: blue
@@ -8,126 +7,77 @@ sdk: docker
 pinned: false
 license: mit
 app_port: 7860
---------------
-
-# InboxPilot-OpenEnv 🚀
-
-**Built for the Meta × Hugging Face OpenEnv Hackathon**
-
-InboxPilot-OpenEnv is a **real-world customer support triage simulation environment** designed to evaluate AI agents using the OpenEnv standard.
-
-It transforms a common business workflow into a structured, testable environment where agents can be trained, evaluated, and benchmarked.
-
 ---
 
-## 🔍 Overview
+# InboxPilot-OpenEnv
 
-InboxPilot simulates how modern customer support systems operate.
+Built for the Meta x Hugging Face OpenEnv Hackathon 🚀
 
-Given a customer ticket, an AI agent must:
+InboxPilot-OpenEnv is a real-world customer support triage environment for evaluating AI agents using the OpenEnv standard.
 
-* understand the issue
-* make structured decisions
-* generate a useful human-like response
+## Overview
 
-This environment is intentionally designed to reflect **real production scenarios**, not toy problems.
+This project simulates a realistic customer support workflow where an AI agent must:
 
----
+- classify the issue category
+- assign a priority level
+- decide whether escalation is needed
+- draft a customer response
+- choose a resolution status
 
-## 💡 Why this matters
+The environment is designed to be lightweight, structured, and suitable for automated evaluation.
 
-Customer support triage is a **critical real-world workflow** used across:
+## Why this matters
 
-* SaaS platforms
-* E-commerce systems
-* Enterprise support teams
+Customer support triage is a real business workflow used in SaaS, e-commerce, and enterprise platforms. InboxPilot turns that workflow into a benchmarkable environment for AI agents.
 
-Poor triage leads to:
+## Tasks
 
-* delayed resolutions
-* customer dissatisfaction
-* increased operational cost
+The environment includes 3 tasks with increasing difficulty:
 
-InboxPilot turns this workflow into a **benchmarkable AI environment**, enabling:
+- **Easy** — damaged product refund request
+- **Medium** — duplicate billing issue from a premium user
+- **Hard** — enterprise outage complaint requiring urgent escalation
 
-* consistent evaluation of agents
-* measurable performance scoring
-* realistic decision-making challenges
+## Action Space
 
----
+The agent returns a structured action with:
 
-## 🧠 Tasks
+- `category`
+- `priority`
+- `escalate`
+- `request_more_info`
+- `response_draft`
+- `resolution_status`
 
-The environment includes **three progressively challenging tasks**:
+## Observation Space
 
-### 🟢 Easy
+The environment returns structured observations including:
 
-A straightforward damaged product refund request
-→ Focus: classification + basic response
+- `ticket_id`
+- `customer_tier`
+- `subject`
+- `email_body`
+- `previous_interactions`
+- `sentiment_hint`
+- `sla_hours_remaining`
+- `allowed_actions`
 
-### 🟡 Medium
+## Reward Logic
 
-A duplicate billing issue from a premium user
-→ Focus: prioritization + customer sensitivity
+The reward is a partial score between `0.0` and `1.0`.
 
-### 🔴 Hard
+Scoring breakdown:
 
-An enterprise-level outage complaint
-→ Focus: escalation, urgency, and structured handling
+- category correctness → `0.25`
+- priority correctness → `0.20`
+- escalation correctness → `0.20`
+- resolution status correctness → `0.10`
+- response relevance → up to `0.25`
 
----
+This creates meaningful partial progress signals instead of simple pass/fail scoring.
 
-## ⚙️ Action Space
-
-The agent must return a **structured action object**:
-
-* `category` → type of issue (refund, billing, technical, etc.)
-* `priority` → low / medium / high
-* `escalate` → whether human intervention is required
-* `request_more_info` → if clarification is needed
-* `response_draft` → message to the customer
-* `resolution_status` → resolved / pending / escalated
-
----
-
-## 📥 Observation Space
-
-Each step returns a structured observation:
-
-* `ticket_id`
-* `customer_tier` (free / premium / enterprise)
-* `subject`
-* `email_body`
-* `previous_interactions`
-* `sentiment_hint`
-* `sla_hours_remaining`
-* `allowed_actions`
-
-This ensures the agent operates with **context similar to real support systems**.
-
----
-
-## 🎯 Reward Function
-
-The environment provides a **continuous reward signal (0.0 → 1.0)**.
-
-### Scoring Breakdown:
-
-* category correctness → **0.25**
-* priority correctness → **0.20**
-* escalation decision → **0.20**
-* resolution status → **0.10**
-* response quality → **up to 0.25**
-
-This allows:
-
-* partial credit
-* nuanced evaluation
-* better learning signals for agents
-
----
-
-## 🏗️ Project Structure
+## Project Structure
 
 ```text
 inboxpilot_openenv/
@@ -150,53 +100,5 @@ inboxpilot_openenv/
 └── server/
     ├── __init__.py
     ├── environment.py
-<<<<<<< HEAD
-    └── app.py
-```
-
----
-
-## 🚀 Key Highlights
-
-* ✅ Real-world task simulation (not a toy problem)
-* ✅ Fully structured OpenEnv-compatible environment
-* ✅ Multi-level difficulty with graded evaluation
-* ✅ Partial reward scoring for better agent learning
-* ✅ Ready for deployment on Hugging Face Spaces
-
----
-
-## 🧪 Usage
-
-Once deployed, the environment exposes standard OpenEnv endpoints:
-
-* `/reset` → initialize a new task
-* `/step` → perform an action
-* `/state` → get current environment state
-
-Agents can interact programmatically or via API testing tools.
-
----
-
-## ⚠️ Notes
-
-* The environment uses the **LiteLLM proxy provided during evaluation**
-* All LLM calls are routed via injected environment variables
-* Designed to comply fully with OpenEnv validation requirements
-
----
-
-## 📌 Final Thoughts
-
-InboxPilot is built with one goal:
-
-> **Make AI evaluation feel like the real world.**
-
-Instead of abstract benchmarks, it focuses on practical decision-making, structured outputs, and measurable impact.
-
----
-
-**Built with focus, iteration, and a bit of chaos 😄**
-=======
     └──  app.py
->>>>>>> 5ce4fc8aa6735d1c80302c6718c2bb808d8a22e0
+    
